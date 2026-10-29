@@ -49,6 +49,14 @@ const API_CONFIG = {
 3. 点击右下角的「AI答题」按钮
 4. 等待AI处理完成
 
+## 获取/更新 API Key
+
+脚本默认走 opencode-go 接口（`https://opencode.ai/zen/go/v1/chat/completions`），
+`apiKey` 填 OpenCode Console 里创建的 API key。
+如果答题时报 401/Unauthorized，大概率是 key 过期：
+去 Console 重新创建一个 key，替换脚本顶部 `API_CONFIG.apiKey` 即可。
+（验证：`opencode run -m opencode-go/mimo-v2.6-flash "只回复数字2"` 不报 key expired 即为有效。）
+
 ## 支持的页面格式
 
 - **格式1**: 表单式题目页面（ant-design样式）

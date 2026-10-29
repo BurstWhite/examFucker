@@ -7,6 +7,8 @@
 // @match        *://www.icourse163.org/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @connect      opencode.ai
 // ==/UserScript==
 
@@ -310,6 +312,40 @@
     return [];
   }
 
+  // opencode-go 要求每个会话带稳定的 x-opencode-session 头用于路由/缓存优化，
+  // 且 UA 不能是通用 SDK 名字。ID 生成一次后存在油猴本地，多次答题复用。
+  function getSessionId() {
+    try {
+      var sid =
+        typeof GM_getValue === "function"
+          ? GM_getValue("opencode_session_id", null)
+          : null;
+      if (!sid) {
+        var rnd = new Uint8Array(16);
+        if (window.crypto && window.crypto.getRandomValues) {
+          window.crypto.getRandomValues(rnd);
+        } else {
+          for (var k = 0; k < 16; k++) rnd[k] = Math.floor(Math.random() * 256);
+        }
+        rnd[6] = (rnd[6] & 0x0f) | 0x40;
+        rnd[8] = (rnd[8] & 0x3f) | 0x80;
+        var hex = Array.prototype.map
+          .call(rnd, function (b) {
+            return ("0" + b.toString(16)).slice(-2);
+          })
+          .join("");
+        sid =
+          hex.slice(0, 8) + "-" + hex.slice(8, 12) + "-" + hex.slice(12, 16) +
+          "-" + hex.slice(16, 20) + "-" + hex.slice(20);
+        if (typeof GM_setValue === "function")
+          GM_setValue("opencode_session_id", sid);
+      }
+      return sid;
+    } catch (e) {
+      return "mooc-ai-helper-fallback";
+    }
+  }
+
   function callAI(prompt, prompt_type = 0) {
     let system_instructions = "";
     return new Promise(function (resolve, reject) {
@@ -344,6 +380,8 @@
           "Content-Type": "application/json",
           Accept: "application/json",
           Authorization: "Bearer " + API_CONFIG.apiKey,
+          "x-opencode-session": getSessionId(),
+          "User-Agent": "mooc-ai-helper/1.9",
         },
         data: requestBody,
         onload: function (response) {
