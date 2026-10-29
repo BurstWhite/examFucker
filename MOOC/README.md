@@ -33,12 +33,12 @@ const CONFIG = {
   textFillInterval: 1000, // 同一题多个填空框填入间隔(ms)，避免保存草稿并发
 };
 
-// API配置
+// API配置（默认走 opencode-go 的 OpenAI 兼容接口，apiKey 填 opencode zen key）
 const API_CONFIG = {
-  baseUrl: "https://api.example.com/v1/chat/completions", // API地址
-  apiKey: "sk-your-api-key", // API密钥
-  models: ["gemini-3-flash", "gemini-2.5-flash", "claude-opus-4-6", "deepseek-v3.2"], // 模型列表
-  selectedModel: "gemini-3-flash", // 当前选择的模型
+  baseUrl: "https://opencode.ai/zen/go/v1/chat/completions", // API地址
+  apiKey: "«reda...…»", // API密钥（opencode zen key）
+  models: ["deepseek-v4.1-flash", "deepseek-v4-flash", "deepseek-v4-pro", "glm-5.3-flash", "qwen3.8-flash", "mimo-v2.6-flash", "muse-spark-1.3-contributor", "kimi-k3"], // 模型列表（opencode-go 短 id）
+  selectedModel: "deepseek-v4.1-flash", // 当前选择的模型
 };
 ```
 
